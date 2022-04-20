@@ -64,7 +64,6 @@ if not Valid then
 end
 local Loaded = loadstring("return "..readfile("StarscapeGUI_Vick/configs/settings.txt"))
 local Settings = Loaded()
-print(Settings)
 
 local function GetDistance(Pos)
     local Char = Player.Character or Player.CharacterAdded:Wait()
@@ -290,35 +289,31 @@ local function UpdatePlayer()
 	end
 	for i,v in pairs(game:GetService("Players"):GetChildren()) do
 		local Char = v.Character
-		if Char and not GetAdor(Char.HumanoidRootPart) then
+		if Char and not GetAdor(PlayerFolder,Char.HumanoidRootPart) and v ~= Player then
 			PlayerMarker(v)
 		end
 	end
 end
 local function UpdateNPC()
 	for i,v in pairs(NPCFolder:GetChildren()) do
-		RS.RenderStepped:Wait()
 		if not v.Adornee then
 			v:Destroy()
 		end
 	end
 	for i,v in pairs(game:GetService("Workspace").NPCs.Ships:GetChildren()) do
-		RS.RenderStepped:Wait()
-		if not string.find(v.Name, "Turret") and not GetAdor(v.PrimaryPart) then
+		if not string.find(v.Name, "Turret") and not GetAdor(NPCFolder,v.PrimaryPart) then
 			NPCMarker(v)
 		end
 	end
 end
 local function UpdateAsteroid()
 	for i,v in pairs(AsteroidFolder:GetChildren()) do
-		RS.RenderStepped:Wait()
 		if not v.Adornee then
 			v:Destroy()
 		end
 	end
 	for i,v in pairs(Feats:GetDescendants()) do
-		RS.RenderStepped:Wait()
-        if v.Name == "Asteroid" and not GetAdor(v.Rock) then
+        if v.Name == "Asteroid" and not GetAdor(AsteroidFolder,v.Rock) then
 			AsteroidMarker(v.Rock)
         end
     end
@@ -326,7 +321,6 @@ end
 
 local function UpdateDist()
 	if Settings.PlayerTog == true then
-		UpdatePlayer()
 		for i,v in pairs(PlayerFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
@@ -342,7 +336,6 @@ local function UpdateDist()
 		end
 	end
 	if Settings.NPCTog == true then
-		UpdateNPC()
 		for i,v in pairs(NPCFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
@@ -358,7 +351,6 @@ local function UpdateDist()
 		end
 	end
 	if Settings.AsteroidTog == true then
-		UpdateAsteroid()
 		for i,v in pairs(AsteroidFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
@@ -396,6 +388,7 @@ local TogglePlayers = S_Players:Toggle("Toggle", Settings.PlayerTog,"TogglePlaye
 	UpdatePlayer()
 	
 	UpdateDist()
+	
 	ToggleMarkers(PlayerFolder,t)
 	
 	SaveSettings(Settings)
