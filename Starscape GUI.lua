@@ -189,11 +189,11 @@ local function NPCMarker(Ship)
 	Marker.Size = UDim2.new(1, 0, 1, 0)
 	Marker.Image = "rbxassetid://2866597030"
 	local Afil = Ship.npc.faction
-	if Afil.Value == "Kavani Mandate" then
+	if Afil.Value == "Kavani" then
 		Marker.ImageColor3 = Color3.fromRGB(52, 227, 25)
-	elseif Afil.Value == "Lycentian Federation" then
+	elseif Afil.Value == "Lycentian" then
 		Marker.ImageColor3 = Color3.fromRGB(4, 131, 227)
-	elseif Afil.Value == "Foralkan Star Empire" then
+	elseif Afil.Value == "Foralkan" then
 		Marker.ImageColor3 = Color3.fromRGB(167, 28, 28)
 	elseif Afil.Value == "Drones" then
 		Marker.ImageColor3 = Color3.fromRGB(255,0,0)
