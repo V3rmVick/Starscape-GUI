@@ -12,16 +12,58 @@ local Sounds = game:GetService("ReplicatedStorage").Sounds
 local SoundGood = Sounds.Raid.Update
 local SoundBad = Sounds.Raid.Stage
 
-local PlrDist = 10000
-local NPCDist = 10000
-local AsteroidDist = 5000
-local PlayerNotif = false
-local MineralNotif = true
-local UpdateDelay = .5
-local SelectedMinerals = {}
-local PlayerTog = true
-local NPCTog = true
-local AsteroidTog = true
+local DefSettings = {
+	PlrDist = 10000,
+	NPCDist = 10000,
+	AsteroidDist = 5000,
+	PlayerNotif = false,
+	MineralNotif = true,
+	UpdateDelay = .5,
+	SelectedMinerals = {"Reknite (pristine)","Gellium (pristine)","Axnit (pristine)","Red Narcor","Vexnium"},
+	PlayerTog = true,
+	NPCTog = true,
+	AsteroidTog = true
+}
+
+function TableToString(tbl)
+    local result = "{"
+    for k, v in pairs(tbl) do
+        -- Check the key type (ignore any numerical keys - assume its an array)
+        if type(k) == "string" then
+            result = result.."[\""..k.."\"]".."="
+        end
+
+        -- Check the value type
+        if type(v) == "table" then
+            result = result..TableToString(v)
+        elseif type(v) == "boolean" then
+            result = result..tostring(v)
+		elseif type(v) == "number" then
+            result = result..tostring(v)
+        else
+            result = result.."\""..v.."\""
+        end
+        result = result..","
+    end
+    -- Remove leading commas from the result
+    if result ~= "" then
+        result = result:sub(1, result:len()-1)
+    end
+    return result.."}"
+end
+
+local function SaveSettings(Sett)
+	local Str = TableToString(Sett)
+	writefile("StarscapeGUI_Vick/configs/settings.txt",Str)
+end
+
+local Valid = isfile("StarscapeGUI_Vick/configs/settings.txt")
+if not Valid then
+	SaveSettings(DefSettings)
+end
+local Loaded = loadstring("return "..readfile("StarscapeGUI_Vick/configs/settings.txt"))
+local Settings = Loaded()
+print(Settings)
 
 local function GetDistance(Pos)
     local Char = Player.Character or Player.CharacterAdded:Wait()
@@ -98,7 +140,7 @@ local function AsteroidMarker(Ador)
     
     Marker.ImageColor3 = Ador.Parent.Mineral.Color
 	
-	if AsteroidTog == false or GetDistance(Ador.Position) > AsteroidDist then
+	if Settings.AsteroidTog == false or GetDistance(Ador.Position) > Settings.AsteroidDist then
 		AsteroidMarker.Enabled = false
 	end
 end
@@ -161,7 +203,7 @@ local function PlayerMarker(Plr)
 		PlrName.TextStrokeTransparency = 0.830
 		PlrName.TextYAlignment = Enum.TextYAlignment.Top
 		
-		if PlayerTog == false or GetDistance(Plr.Character.HumanoidRootPart.Position) > PlrDist then
+		if Settings.PlayerTog == false or GetDistance(Plr.Character.HumanoidRootPart.Position) > Settings.PlrDist then
 			PlayerMarker.Enabled = false
 		end
 	end
@@ -226,18 +268,18 @@ local function NPCMarker(Ship)
 	PlrName.TextStrokeTransparency = 0.830
 	PlrName.TextYAlignment = Enum.TextYAlignment.Top
 	
-	if NPCTog == false or GetDistance(Ship.PrimaryPart.Position) > NPCDist then
+	if Settings.NPCTog == false or GetDistance(Ship.PrimaryPart.Position) > Settings.NPCDist then
 		PlayerMarker.Enabled = false
 	end
 end
 
 local function UpdateDist()
-	if PlayerTog == true then
+	if Settings.PlayerTog == true then
 		for i,v in pairs(PlayerFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
 				v.Marker.Dist.Text = tostring(Dist).."st"
-				if Dist <= PlrDist then
+				if Dist <= Settings.PlrDist then
 					v.Enabled = true
 				else
 					v.Enabled = false
@@ -247,12 +289,12 @@ local function UpdateDist()
 			end
 		end
 	end
-	if NPCTog == true then
+	if Settings.NPCTog == true then
 		for i,v in pairs(NPCFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
 				v.Marker.Dist.Text = tostring(Dist).."st"
-				if Dist <= NPCDist then
+				if Dist <= Settings.NPCDist then
 					v.Enabled = true
 				else
 					v.Enabled = false
@@ -262,12 +304,12 @@ local function UpdateDist()
 			end
 		end
 	end
-	if AsteroidTog == true then
+	if Settings.AsteroidTog == true then
 		for i,v in pairs(AsteroidFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
 				v.Marker.Dist.Text = tostring(Dist).."st"
-				if Dist <= AsteroidDist then
+				if Dist <= Settings.AsteroidDist then
 					v.Enabled = true
 				else
 					v.Enabled = false
@@ -287,7 +329,7 @@ local function ToggleMarkers(Folder,State)
 end
 
 local function RunUpdate()
-	while wait(UpdateDelay) do
+	while wait(Settings.UpdateDelay) do
 		UpdateDist()
 	end
 end
@@ -295,8 +337,8 @@ end
 local T_ESP = Main:Tab("ESP")
 
 local S_Players = T_ESP:Section("Players")
-local TogglePlayers = S_Players:Toggle("Toggle", PlayerTog,"TogglePlayers", function(t)
-	PlayerTog = t
+local TogglePlayers = S_Players:Toggle("Toggle", Settings.PlayerTog,"TogglePlayers", function(t)
+	Settings.PlayerTog = t
 	for i,v in pairs(PlayerFolder:GetChildren()) do
 		v:Destroy()
 	end
@@ -319,7 +361,7 @@ local TogglePlayers = S_Players:Toggle("Toggle", PlayerTog,"TogglePlayers", func
 					end
 				end
 			end)
-			if PlayerNotif == true then
+			if Settings.PlayerNotif == true then
 				SoundBad:Play()
 				Lib:Notification("Player Joined",Plr.Name.." has joined the server")
 			end
@@ -327,7 +369,7 @@ local TogglePlayers = S_Players:Toggle("Toggle", PlayerTog,"TogglePlayers", func
 	end)
 	game:GetService("Players").PlayerRemoving:Connect(function(Plr)
 		if GUI then
-			if PlayerNotif == true then
+			if Settings.PlayerNotif == true then
 				SoundGood:Play()
 				Lib:Notification("Player Left",Plr.Name.." has left the server")
 			end
@@ -338,18 +380,21 @@ local TogglePlayers = S_Players:Toggle("Toggle", PlayerTog,"TogglePlayers", func
 			end
 		end
 	end)
+	SaveSettings(Settings)
 end)
-local TogglePlayerNotif = S_Players:Toggle("Player Join Notify", PlayerNotif,"TogglePlayerNotif", function(t)
-	PlayerNotif = t
+local TogglePlayerNotif = S_Players:Toggle("Player Join Notify", Settings.PlayerNotif,"ToggleSettings.PlayerNotif", function(t)
+	Settings.PlayerNotif = t
+	SaveSettings(Settings)
 end)
-local SliderPlayerRange = S_Players:Slider("Range", 50,60000,PlrDist,50,"SliderPlayerRange", function(t)
-	PlrDist = t
+local SliderPlayerRange = S_Players:Slider("Range", 50,60000,Settings.PlrDist,50,"SliderPlayerRange", function(t)
+	Settings.PlrDist = t
 	UpdateDist()
+	SaveSettings(Settings)
 end)
 
 local S_NPCs = T_ESP:Section("NPCs")
-local ToggleNPCs = S_NPCs:Toggle("Toggle", NPCTog,"ToggleNPCs", function(t)
-	NPCTog = t
+local ToggleNPCs = S_NPCs:Toggle("Toggle", Settings.NPCTog,"ToggleNPCs", function(t)
+	Settings.NPCTog = t
 	for i,v in pairs(NPCFolder:GetChildren()) do
 		v:Destroy()
 	end
@@ -360,15 +405,17 @@ local ToggleNPCs = S_NPCs:Toggle("Toggle", NPCTog,"ToggleNPCs", function(t)
 	end
 	UpdateDist()
 	ToggleMarkers(NPCFolder,t)
+	SaveSettings(Settings)
 end)
-local SliderNPCRange = S_NPCs:Slider("Range", 50,60000,NPCDist,50,"SliderNPCRange", function(t)
-	NPCDist = t
+local SliderNPCRange = S_NPCs:Slider("Range", 50,60000,Settings.NPCDist,50,"SliderNPCRange", function(t)
+	Settings.NPCDist = t
 	UpdateDist()
+	SaveSettings(Settings)
 end)
 
 local S_Asteroids = T_ESP:Section("Asteroids")
-local ToggleAsteroids = S_Asteroids:Toggle("Toggle", AsteroidTog,"ToggleAsteroids", function(t)
-	AsteroidTog = t
+local ToggleAsteroids = S_Asteroids:Toggle("Toggle", Settings.AsteroidTog,"ToggleAsteroids", function(t)
+	Settings.AsteroidTog = t
 	for i,v in pairs(AsteroidFolder:GetChildren()) do
 		v:Destroy()
 	end
@@ -379,38 +426,42 @@ local ToggleAsteroids = S_Asteroids:Toggle("Toggle", AsteroidTog,"ToggleAsteroid
     end
 	UpdateDist()
 	ToggleMarkers(AsteroidFolder,t)
+	SaveSettings(Settings)
 end)
-local SliderAsteroidRange = S_Asteroids:Slider("Range", 50,60000,AsteroidDist,50,"SliderAsteroidRange", function(t)
-	AsteroidDist = t
+local SliderAsteroidRange = S_Asteroids:Slider("Range", 50,60000,Settings.AsteroidDist,50,"SliderAsteroidRange", function(t)
+	Settings.AsteroidDist = t
 	UpdateDist()
+	SaveSettings(Settings)
 end)
 
 local S_Minerals = T_ESP:Section("Minerals")
-local ToggleMineralNotif = S_Minerals:Toggle("Toggle Notification", MineralNotif,"ToggleMineralNotif", function(t)
-	MineralNotif = t
+local ToggleMineralNotif = S_Minerals:Toggle("Toggle Notification", Settings.MineralNotif,"ToggleSettings.MineralNotif", function(t)
+	Settings.MineralNotif = t
+	SaveSettings(Settings)
 end)
 S_Minerals:Button("Manual Scan", function()
 	SoundGood:Play()
 	local Found = {}
-	for i,v in pairs(SelectedMinerals) do
+	for i,v in pairs(Settings.SelectedMinerals) do
 		if GetMineralNum(v) > 0 then
-			if Found[v] then
-				Found[v] = Found[v] + 1
-			else
-				Found[v] = 1
-			end
+			Found[v] = GetMineralNum(v)
 		end
 	end
-	if #Found == 0 then
+	local TableLen = 0
+	for i,v in pairs(Found) do
+		TableLen = TableLen + 1
+	end
+	if TableLen == 0 then
 		Lib:Notification("Detected Minerals","There are no filtered minerals in this server")
 	else
 		local NewStr = ""
 		for i,v in pairs(Found) do
 			NewStr = NewStr..i.." x"..tostring(v).."\n"
 		end
-		Lib:Notification("Detected Minerals",Str)
+		Lib:Notification("Detected Minerals",NewStr)
 	end
 end)
+local Ran = false
 local MultiDropMineralFilter = S_Minerals:MultiDropdown("Mineral Filter", {
 	"Korrelite (inferior)","Korrelite","Korrelite (superior)","Korrelite (pristine)",
 	"Reknite (inferior)","Reknite","Reknite (superior)","Reknite (pristine)",
@@ -418,42 +469,45 @@ local MultiDropMineralFilter = S_Minerals:MultiDropdown("Mineral Filter", {
 	"Axnit","Axnit (pristine)",
 	"Narcor",
 	"Red Narcor",
-	"Vexnium"},{"Reknite (pristine)","Gellium (pristine)","Axnit (pristine)","Red Narcor","Vexnium"},"MultiDropMineralFilter",
+	"Vexnium"},Settings.SelectedMinerals,"MultiDropMineralFilter",
 	function(t)
-		SelectedMinerals = t
-		if MineralNotif == true then
+		Settings.SelectedMinerals = t
+		if Settings.MineralNotif == true and Ran == false then
+			Ran = true
 			wait(8)
-			if MineralNotif == true then
+			if Settings.MineralNotif == true then
 				SoundGood:Play()
 				local Found = {}
-				for i,v in pairs(t) do
+				for i,v in pairs(Settings.SelectedMinerals) do
 					if GetMineralNum(v) > 0 then
-						if Found[v] then
-							Found[v] = Found[v] + 1
-						else
-							Found[v] = 1
-						end
+						Found[v] = GetMineralNum(v)
 					end
 				end
-				if #Found == 0 then
+				local TableLen = 0
+				for i,v in pairs(Found) do
+					TableLen = TableLen + 1
+				end
+				if TableLen == 0 then
 					Lib:Notification("Detected Minerals","There are no filtered minerals in this server")
 				else
 					local NewStr = ""
 					for i,v in pairs(Found) do
 						NewStr = NewStr..i.." x"..tostring(v).."\n"
 					end
-					Lib:Notification("Detected Minerals",Str)
+					Lib:Notification("Detected Minerals",NewStr)
 				end
 			end
 		end
+		SaveSettings(Settings)
 end)
 
 
 local T_Other = Main:Tab("Other")
 
 local S_Settings = T_Other:Section("Settings")
-local SliderUpdateDelay = S_Settings:Slider("Update Delay", .05,5,UpdateDelay,.05,"SliderUpdateDelay", function(t)
-	UpdateDelay = t
+local SliderUpdateDelay = S_Settings:Slider("Update Delay", .05,5,Settings.UpdateDelay,.05,"SliderSettings.UpdateDelay", function(t)
+	Settings.UpdateDelay = t
+	SaveSettings(Settings)
 end)
 RunUpdate()
 
