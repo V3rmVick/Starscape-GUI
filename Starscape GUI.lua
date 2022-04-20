@@ -351,36 +351,36 @@ local TogglePlayers = S_Players:Toggle("Toggle", Settings.PlayerTog,"TogglePlaye
 	UpdateDist()
 	ToggleMarkers(PlayerFolder,t)
 	
-	game:GetService("Players").PlayerAdded:Connect(function(Plr)
-		if GUI then
-			Plr.CharacterAdded:Connect(function(Char)
-				PlayerMarker(v)
-				for i,v in pairs(PlayerFolder:GetChildren()) do
-					if not v.Adornee then
-						v:Destroy()
-					end
-				end
-			end)
-			if Settings.PlayerNotif == true then
-				SoundBad:Play()
-				Lib:Notification("Player Joined",Plr.Name.." has joined the server")
-			end
-		end
-	end)
-	game:GetService("Players").PlayerRemoving:Connect(function(Plr)
-		if GUI then
-			if Settings.PlayerNotif == true then
-				SoundGood:Play()
-				Lib:Notification("Player Left",Plr.Name.." has left the server")
-			end
+	SaveSettings(Settings)
+end)
+game:GetService("Players").PlayerAdded:Connect(function(Plr)
+	if GUI then
+		Plr.CharacterAdded:Connect(function(Char)
+			PlayerMarker(v)
 			for i,v in pairs(PlayerFolder:GetChildren()) do
 				if not v.Adornee then
 					v:Destroy()
 				end
 			end
+		end)
+		if Settings.PlayerNotif == true then
+			SoundBad:Play()
+			Lib:Notification("Player Joined",Plr.Name.." has joined the server")
 		end
-	end)
-	SaveSettings(Settings)
+	end
+end)
+game:GetService("Players").PlayerRemoving:Connect(function(Plr)
+	if GUI then
+		if Settings.PlayerNotif == true then
+			SoundGood:Play()
+			Lib:Notification("Player Left",Plr.Name.." has left the server")
+		end
+		for i,v in pairs(PlayerFolder:GetChildren()) do
+			if not v.Adornee then
+				v:Destroy()
+			end
+		end
+	end
 end)
 local TogglePlayerNotif = S_Players:Toggle("Player Join Notify", Settings.PlayerNotif,"ToggleSettings.PlayerNotif", function(t)
 	Settings.PlayerNotif = t
