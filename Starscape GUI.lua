@@ -237,7 +237,7 @@ local function NPCMarker(Ship)
 		Marker.ImageColor3 = Color3.fromRGB(4, 131, 227)
 	elseif Afil.Value == "Foralkan" then
 		Marker.ImageColor3 = Color3.fromRGB(167, 28, 28)
-	elseif Afil.Value == "Drones" then
+	elseif Afil.Value == "Drones" or Afil.Value == "Pirates" then
 		Marker.ImageColor3 = Color3.fromRGB(255,0,0)
 	end
 
