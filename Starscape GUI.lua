@@ -26,7 +26,7 @@ local AsteroidTog = true
 local function GetDistance(Pos)
     local Char = Player.Character or Player.CharacterAdded:Wait()
     if Char then
-        return math.floor((Char.HumanoidRootPart.Position - Pos).Magnitude)
+        return math.floor((Char:WaitForChild("HumanoidRootPart").Position - Pos).Magnitude)
     end
     return 0
 end
