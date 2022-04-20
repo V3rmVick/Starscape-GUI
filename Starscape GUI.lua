@@ -5,6 +5,7 @@ local GameName = game:GetService("MarketplaceService"):GetProductInfo(game.Place
 if string.find(GameName,"Starscape") and not game:GetService("CoreGui"):FindFirstChild("dosage's solaris gui") then
 
 local CGui = game:GetService("CoreGui")
+local RS = game:GetService("RunService")
 
 local Player = game:GetService("Players").LocalPlayer
 local Feats = game:GetService("Workspace").Features
@@ -296,11 +297,13 @@ local function UpdatePlayer()
 end
 local function UpdateNPC()
 	for i,v in pairs(NPCFolder:GetChildren()) do
+		RS.RenderStepped:Wait()
 		if not v.Adornee then
 			v:Destroy()
 		end
 	end
 	for i,v in pairs(game:GetService("Workspace").NPCs.Ships:GetChildren()) do
+		RS.RenderStepped:Wait()
 		if not string.find(v.Name, "Turret") and not GetAdor(v.PrimaryPart) then
 			NPCMarker(v)
 		end
@@ -308,11 +311,13 @@ local function UpdateNPC()
 end
 local function UpdateAsteroid()
 	for i,v in pairs(AsteroidFolder:GetChildren()) do
+		RS.RenderStepped:Wait()
 		if not v.Adornee then
 			v:Destroy()
 		end
 	end
 	for i,v in pairs(Feats:GetDescendants()) do
+		RS.RenderStepped:Wait()
         if v.Name == "Asteroid" and not GetAdor(v.Rock) then
 			AsteroidMarker(v.Rock)
         end
