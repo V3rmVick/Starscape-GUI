@@ -273,32 +273,47 @@ local function NPCMarker(Ship)
 	end
 end
 
+local function GetAdor(Folder,Ador)
+	for i,v in pairs(Folder:GetChildren()) do
+		if v.Adornee == Ador then
+			return v
+		end
+	end
+end
+
 local function UpdatePlayer()
 	for i,v in pairs(PlayerFolder:GetChildren()) do
-		v:Destroy()
+		if not v.Adornee then
+			v:Destroy()
+		end
 	end
 	for i,v in pairs(game:GetService("Players"):GetChildren()) do
-		if v ~= Player then
+		local Char = v.Character
+		if Char and not GetAdor(Char.HumanoidRootPart) then
 			PlayerMarker(v)
 		end
 	end
 end
 local function UpdateNPC()
 	for i,v in pairs(NPCFolder:GetChildren()) do
-		v:Destroy()
+		if not v.Adornee then
+			v:Destroy()
+		end
 	end
 	for i,v in pairs(game:GetService("Workspace").NPCs.Ships:GetChildren()) do
-		if not string.find(v.Name, "Turret") then
+		if not string.find(v.Name, "Turret") and not GetAdor(v.PrimaryPart) then
 			NPCMarker(v)
 		end
 	end
 end
 local function UpdateAsteroid()
 	for i,v in pairs(AsteroidFolder:GetChildren()) do
-		v:Destroy()
+		if not v.Adornee then
+			v:Destroy()
+		end
 	end
 	for i,v in pairs(Feats:GetDescendants()) do
-        if v.Name == "Asteroid" then
+        if v.Name == "Asteroid" and not GetAdor(v.Rock) then
 			AsteroidMarker(v.Rock)
         end
     end
