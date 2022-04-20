@@ -273,8 +273,40 @@ local function NPCMarker(Ship)
 	end
 end
 
+local function UpdatePlayer()
+	for i,v in pairs(PlayerFolder:GetChildren()) do
+		v:Destroy()
+	end
+	for i,v in pairs(game:GetService("Players"):GetChildren()) do
+		if v ~= Player then
+			PlayerMarker(v)
+		end
+	end
+end
+local function UpdateNPC()
+	for i,v in pairs(NPCFolder:GetChildren()) do
+		v:Destroy()
+	end
+	for i,v in pairs(game:GetService("Workspace").NPCs.Ships:GetChildren()) do
+		if not string.find(v.Name, "Turret") then
+			NPCMarker(v)
+		end
+	end
+end
+local function UpdateAsteroid()
+	for i,v in pairs(AsteroidFolder:GetChildren()) do
+		v:Destroy()
+	end
+	for i,v in pairs(Feats:GetDescendants()) do
+        if v.Name == "Asteroid" then
+			AsteroidMarker(v.Rock)
+        end
+    end
+end
+
 local function UpdateDist()
 	if Settings.PlayerTog == true then
+		UpdatePlayer()
 		for i,v in pairs(PlayerFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
@@ -290,6 +322,7 @@ local function UpdateDist()
 		end
 	end
 	if Settings.NPCTog == true then
+		UpdateNPC()
 		for i,v in pairs(NPCFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
@@ -305,6 +338,7 @@ local function UpdateDist()
 		end
 	end
 	if Settings.AsteroidTog == true then
+		UpdateAsteroid()
 		for i,v in pairs(AsteroidFolder:GetChildren()) do
 			if v.Adornee then
 				local Dist = GetDistance(v.Adornee.Position)
@@ -339,14 +373,7 @@ local T_ESP = Main:Tab("ESP")
 local S_Players = T_ESP:Section("Players")
 local TogglePlayers = S_Players:Toggle("Toggle", Settings.PlayerTog,"TogglePlayers", function(t)
 	Settings.PlayerTog = t
-	for i,v in pairs(PlayerFolder:GetChildren()) do
-		v:Destroy()
-	end
-	for i,v in pairs(game:GetService("Players"):GetChildren()) do
-		if v ~= Player then
-			PlayerMarker(v)
-		end
-	end
+	UpdatePlayer()
 	
 	UpdateDist()
 	ToggleMarkers(PlayerFolder,t)
@@ -395,16 +422,11 @@ end)
 local S_NPCs = T_ESP:Section("NPCs")
 local ToggleNPCs = S_NPCs:Toggle("Toggle", Settings.NPCTog,"ToggleNPCs", function(t)
 	Settings.NPCTog = t
-	for i,v in pairs(NPCFolder:GetChildren()) do
-		v:Destroy()
-	end
-	for i,v in pairs(game:GetService("Workspace").NPCs.Ships:GetChildren()) do
-		if not string.find(v.Name, "Turret") then
-			NPCMarker(v)
-		end
-	end
+	UpdateNPC()
+	
 	UpdateDist()
 	ToggleMarkers(NPCFolder,t)
+	
 	SaveSettings(Settings)
 end)
 local SliderNPCRange = S_NPCs:Slider("Range", 50,60000,Settings.NPCDist,50,"SliderNPCRange", function(t)
@@ -416,16 +438,11 @@ end)
 local S_Asteroids = T_ESP:Section("Asteroids")
 local ToggleAsteroids = S_Asteroids:Toggle("Toggle", Settings.AsteroidTog,"ToggleAsteroids", function(t)
 	Settings.AsteroidTog = t
-	for i,v in pairs(AsteroidFolder:GetChildren()) do
-		v:Destroy()
-	end
-	for i,v in pairs(Feats:GetDescendants()) do
-        if v.Name == "Asteroid" then
-			AsteroidMarker(v.Rock)
-        end
-    end
+	UpdateAsteroid()
+	
 	UpdateDist()
 	ToggleMarkers(AsteroidFolder,t)
+	
 	SaveSettings(Settings)
 end)
 local SliderAsteroidRange = S_Asteroids:Slider("Range", 50,60000,Settings.AsteroidDist,50,"SliderAsteroidRange", function(t)
