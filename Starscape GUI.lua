@@ -596,10 +596,7 @@ if Settings.MineralNotif == true then
 	else
 		local NewStr = ""
 		for i,v in pairs(Found) do
-			NewStr = NewStr..i.." x"..tostring(v)
-			if i ~= #Found then
-				NewStr = NewStr.." | "
-			end
+			NewStr = NewStr..i.." x"..tostring(v).." | "
 		end
 		GUI:Notify("Minerals",NewStr)
 	end
