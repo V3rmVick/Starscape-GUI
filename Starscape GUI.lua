@@ -421,7 +421,7 @@ end
 
 -- Update UI Toggle
 if Settings.UIState == false then
-	GUI:toggle()
+	FGUI.Enabled = false
 end
 
 -- PAGE 1
