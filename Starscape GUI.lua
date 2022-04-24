@@ -496,11 +496,8 @@ local Page3 = GUI:addPage("Other")
 local P3_Section1 = Page3:addSection("Other")
 P3_Section1:addKeybind("Toggle UI", Settings.ToggleUIBind, function()
 	GUI:toggle()
-	if Settings.UIState == true then
-		Settings.UIState = false
-	else
-		Settings.UIState = true
-	end
+	Settings.UIState = FGui.Enabled
+	SaveSettings(Settings)
 end, function(Key)
 	Settings.ToggleUIBind = Key
 	SaveSettings(Settings)
