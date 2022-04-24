@@ -1,5 +1,6 @@
 local Succ, Error = pcall(function()
 repeat wait() until game:IsLoaded()
+if game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name == "Starscape: System" then
 
 -- Services
 local CGui = game:GetService("CoreGui")
@@ -602,6 +603,7 @@ if Settings.MineralNotif == true then
 	end
 end
 
+end
 end)
 if Error then
 	warn(Error)
