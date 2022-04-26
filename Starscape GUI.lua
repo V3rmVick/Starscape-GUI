@@ -621,7 +621,7 @@ spawn(function()
 							break
 						end
 					end
-					mousemoverel(0,10)
+					mousemoverel(0,20)
 				else
 					keyrelease(0x20)
 					break
