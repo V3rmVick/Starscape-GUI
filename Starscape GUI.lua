@@ -105,6 +105,15 @@ local function GetDistance(Pos)
     return 0
 end
 
+local function Notif(Title, Desc, Bad)
+	GUI:Notify(Title,Desc)
+	if Bad then
+		SoundBad:Play()
+	else
+		SoundGood:Play()
+	end
+end
+
 local function waitUntilTimeout(event, timeout)
     local signal = RbxUtility.CreateSignal()
     local conn = nil
@@ -543,12 +552,10 @@ end)
 P3_Section1:addKeybind("Toggle Auto Warp", Settings.ToggleAutoWarp, function()
 	if FGUI then
 		if Settings.AutoWarp == true then
-			SoundGood:Play()
-			GUI:Notify("Auto Warp","Auto Warp has been toggle OFF")
+			Notif("Auto Warp","Auto Warp has been toggle OFF")
 			Settings.AutoWarp = false
 		else
-			SoundGood:Play()
-			GUI:Notify("Auto Warp","Auto Warp has been toggle ON")
+			Notif("Auto Warp","Auto Warp has been toggle ON")
 			Settings.AutoWarp = true
 		end
 		SaveSettings(Settings)
@@ -570,16 +577,14 @@ end)
 -- Events
 Players.PlayerAdded:Connect(function(Plr)
 	if CGui:FindFirstChild(GUIName) and Settings.PlayerNotif == true and Plr ~= Player then
-		SoundBad:Play()
-		GUI:Notify("Player Joined",Plr.Name.." has joined the server")
+		Notif("Player Joined",Plr.Name.." has joined the server",true)
 	end
 	
 	CreatePlayerMarker(Plr)
 end)
 Players.PlayerRemoving:Connect(function(Plr)
 	if CGui:FindFirstChild(GUIName) and Settings.PlayerNotif == true and Plr ~= Player then
-		SoundGood:Play()
-		GUI:Notify("Player Left",Plr.Name.." has left the server")
+		Notif("Player Left",Plr.Name.." has left the server")
 	end
 end)
 WS.NPCs.Ships.ChildAdded:Connect(function(Child)
@@ -634,7 +639,6 @@ end)
 spawn(function()
 	wait(Settings.MineralNotifWait)
 	if Settings.MineralNotif == true then
-		SoundGood:Play()
 		local Found = {}
 		for i,v in pairs(Minerals) do
 			if GetMineralNum(v) > 0 then
@@ -652,7 +656,7 @@ spawn(function()
 			for i,v in pairs(Found) do
 				NewStr = NewStr..i.." x"..tostring(v).." | "
 			end
-			GUI:Notify("Minerals",NewStr)
+			Notif("Minerals",NewStr)
 		end
 	end
 end)
