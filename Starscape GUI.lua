@@ -550,6 +550,7 @@ P3_Section1:addKeybind("Toggle Auto Warp", Settings.ToggleAutoWarp, function()
 			GUI:Notify("Auto Warp","Auto Warp has been toggle ON")
 			Settings.AutoWarp = true
 		end
+		SaveSettings(Settings)
 	end
 end, function(Key)
 	if Key.KeyCode then
