@@ -576,24 +576,24 @@ end)
 
 -- Events
 Players.PlayerAdded:Connect(function(Plr)
-	if CGui:FindFirstChild(GUIName) and Settings.PlayerNotif == true and Plr ~= Player then
+	if FGUI and Settings.PlayerNotif == true and Plr ~= Player then
 		Notif("Player Joined",Plr.Name.." has joined the server",true)
 	end
 	
 	CreatePlayerMarker(Plr)
 end)
 Players.PlayerRemoving:Connect(function(Plr)
-	if CGui:FindFirstChild(GUIName) and Settings.PlayerNotif == true and Plr ~= Player then
+	if FGUI and Settings.PlayerNotif == true and Plr ~= Player then
 		Notif("Player Left",Plr.Name.." has left the server")
 	end
 end)
 WS.NPCs.Ships.ChildAdded:Connect(function(Child)
-	if CGui:FindFirstChild(GUIName) and not string.find(Child.Name, "Turret") then
+	if FGUI and not string.find(Child.Name, "Turret") then
 		CreateNPCMarker(Child)
 	end
 end)
 WS.Features.DescendantAdded:Connect(function(Desc)
-	if Desc.Name == "Asteroid" then
+	if FGUI and Desc.Name == "Asteroid" then
 		CreateAsteroidMarker(Desc.Rock)
 	end
 end)
