@@ -1,6 +1,7 @@
 local Succ, Error = pcall(function()
 repeat wait() until game:IsLoaded()
 if game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name ~= "Starscape: Beta" then
+--=============================================================
 
 -- Services
 local CGui = game:GetService("CoreGui")
@@ -609,68 +610,54 @@ end
 
 spawn(function()
     while wait(2) and FGUI do
-        pcall(function()
-            wait(15)
-            if Settings.AutoWarp == true 
-            and PlayerGui.Overlays.Standard.System.Destination.Visible == true then
-                local warpMenu = PlayerGui.QuickWarp
-            	keypress(0x20)
-            	keyrelease(0x20)
-                if PlayerGui.Overlays.Standard.Flying.Wrapper.HUD.Indicators.Warp.Visible == false then
-                    local holdSpace = coroutine.wrap(function()
-                        while wait() 
-                        and Settings.AutoWarp == true  do
-                            keypress(0x20)
-                        end
-                    end)
-                    holdSpace()
-
-                    local moveMouse = coroutine.wrap(function()
-                        while wait() 
-                        and Settings.AutoWarp == true do
-                            mousemoverel(0,10)
-                            for k,v in pairs(warpMenu.Items:GetChildren()) do
-                                if v:IsA("Frame") 
-                                and v.Icon.Image == "rbxassetid://3885669481" 
-                                and v.Icon.ImageColor3 ~= Color3.new(1,1,1)
-                                and v.Back.BackgroundTransparency == 0 then
-                                    keyrelease(0x20)
-                                    break
-                                end
-                            end
-                        end
-                    end)
-                    moveMouse()
-                end
-            end
-        end)
+		if Settings.AutoWarp == true and PlayerGui.Overlays.Standard.System.Destination.Visible == true then
+			local warpMenu = PlayerGui.QuickWarp
+			while wait() do
+				if Settings.AutoWarp == true and PlayerGui.Overlays.Standard.Flying.Wrapper.HUD.Indicators.Warp.Visible == false then
+					keypress(0x20)
+					for k,v in pairs(warpMenu.Items:GetChildren()) do
+						if v:IsA("Frame") and v.Icon.Image == "rbxassetid://3885669481" and v.Icon.ImageColor3 ~= Color3.new(1,1,1)and v.Back.BackgroundTransparency == 0 then
+							keyrelease(0x20)
+							break
+						end
+					end
+					mousemoverel(0,10)
+				else
+					keyrelease(0x20)
+					break
+				end
+			end
+		end
     end
 end)
 
-wait(Settings.MineralNotifWait)
-if Settings.MineralNotif == true then
-	SoundGood:Play()
-	local Found = {}
-	for i,v in pairs(Minerals) do
-		if GetMineralNum(v) > 0 then
-			Found[v] = GetMineralNum(v)
+spawn(function()
+	wait(Settings.MineralNotifWait)
+	if Settings.MineralNotif == true then
+		SoundGood:Play()
+		local Found = {}
+		for i,v in pairs(Minerals) do
+			if GetMineralNum(v) > 0 then
+				Found[v] = GetMineralNum(v)
+			end
 		end
-	end
-	local TableLen = 0
-	for i,v in pairs(Found) do
-		TableLen = TableLen + 1
-	end
-	if TableLen == 0 then
-		Lib:Notification("Detected Minerals","There are no minerals in this server")
-	else
-		local NewStr = ""
+		local TableLen = 0
 		for i,v in pairs(Found) do
-			NewStr = NewStr..i.." x"..tostring(v).." | "
+			TableLen = TableLen + 1
 		end
-		GUI:Notify("Minerals",NewStr)
+		if TableLen == 0 then
+			Lib:Notification("Detected Minerals","There are no minerals in this server")
+		else
+			local NewStr = ""
+			for i,v in pairs(Found) do
+				NewStr = NewStr..i.." x"..tostring(v).." | "
+			end
+			GUI:Notify("Minerals",NewStr)
+		end
 	end
-end
+end)
 
+--=============================================================
 end
 end)
 if Error then
