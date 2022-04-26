@@ -421,7 +421,7 @@ local function CreateAsteroidMarker(Rock)
 	Pristine.Position = UDim2.new(1, 0, 0.375, 0)
 	Pristine.Size = UDim2.new(0.25, 0, 0.25, 0)
 	Pristine.Visible = false
-	if Rock.Parent.Mineral.Material == Enum.Material.Grass then
+	if Rock.Parent.Mineral.Material == Enum.Material.Ice then
 		Superior.Visible = true
 		Pristine.Visible = true
 	end
@@ -590,6 +590,11 @@ end)
 WS.NPCs.Ships.ChildAdded:Connect(function(Child)
 	if CGui:FindFirstChild(GUIName) and not string.find(Child.Name, "Turret") then
 		CreateNPCMarker(Child)
+	end
+end)
+WS.Features.DescendantAdded:Connect(function(Desc)
+	if Desc.Name == "Asteroid" then
+		CreateAsteroidMarker(Desc.Rock)
 	end
 end)
 
