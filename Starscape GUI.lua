@@ -608,7 +608,7 @@ for i,v in pairs(WS.Features:GetDescendants()) do
 end
 
 spawn(function()
-    while wait() and FGUI do
+    while wait(2) and FGUI do
         pcall(function()
             wait(15)
             if Settings.AutoWarp == true 
