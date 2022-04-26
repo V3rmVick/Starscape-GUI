@@ -46,7 +46,7 @@ local DefSettings = {
 	ToggleUIBind = Enum.KeyCode.K,
 	UIState = true,
 	ToggleMouseUnlock = Enum.KeyCode.RightAlt,
-	ToggleAutoWarp = Enum.KeyCode.F1,
+	ToggleAutoWarp = Enum.KeyCode.L,
 	AutoWarp = false,
 	MouseUnlockOpenUI = true
 }
