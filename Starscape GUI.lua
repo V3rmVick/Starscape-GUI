@@ -1,6 +1,6 @@
 local Succ, Error = pcall(function()
 repeat wait() until game:IsLoaded()
-if game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name == "Starscape: System" then
+if game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name ~= "Starscape: Beta" then
 
 -- Services
 local CGui = game:GetService("CoreGui")
@@ -19,6 +19,7 @@ local Lib = loadstring(game:HttpGet("https://raw.githubusercontent.com/GreenDeno
 local GUI = Lib.new(GUIName)
 
 local Player = Players.LocalPlayer
+local PlayerGui = Player.PlayerGui
 local Sounds = RS.Sounds
 local SoundGood = Sounds.Raid.Update
 local SoundBad = Sounds.Raid.Stage
@@ -44,6 +45,8 @@ local DefSettings = {
 	ToggleUIBind = Enum.KeyCode.K,
 	UIState = true,
 	ToggleMouseUnlock = Enum.KeyCode.RightAlt,
+	ToggleAutoWarp = Enum.KeyCode.F1,
+	AutoWarp = false,
 	MouseUnlockOpenUI = true
 }
 function TableToString(tbl)
@@ -421,7 +424,7 @@ end
 
 -- Update UI Toggle
 if Settings.UIState == false then
-	FGUI.Enabled = false
+	GUI:toggle()
 end
 
 -- PAGE 1
@@ -495,36 +498,62 @@ end)
 local Page3 = GUI:addPage("Other")
 local P3_Section1 = Page3:addSection("Other")
 P3_Section1:addKeybind("Toggle UI", Settings.ToggleUIBind, function()
-	GUI:toggle()
-	Settings.UIState = FGui.Enabled
-	SaveSettings(Settings)
+	if FGUI then
+		if Settings.UIState == true then
+			Settings.UIState = false
+		else
+			Settings.UIState = true
+		end
+		SaveSettings(Settings)
+		GUI:toggle()
+	end
 end, function(Key)
 	Settings.ToggleUIBind = Key
 	SaveSettings(Settings)
 end)
 P3_Section1:addKeybind("Unlock Mouse", Settings.ToggleMouseUnlock, function()
-	local Mouse = Player:GetMouse()
-	if MouseUnlock == true then
-		MouseUnlock = false
-		SetModal(false)
-		UIS.MouseIconEnabled = false
-	else
-		MouseUnlock = true
-		SetModal(true)
-		spawn(function()
-			while MouseUnlock == true do
-				RunS.RenderStepped:Wait()
-				UIS.MouseIconEnabled = true
+	if FGUI then
+		local Mouse = Player:GetMouse()
+		if MouseUnlock == true then
+			MouseUnlock = false
+			SetModal(false)
+			UIS.MouseIconEnabled = false
+		else
+			MouseUnlock = true
+			SetModal(true)
+			spawn(function()
+				while MouseUnlock == true do
+					RunS.RenderStepped:Wait()
+					UIS.MouseIconEnabled = true
+				end
+			end)
+			if Settings.UIState == false then
+				Settings.UIState = true
+				GUI:toggle()
 			end
-		end)
-		if Settings.UIState == false then
-			Settings.UIState = true
-			GUI:toggle()
 		end
 	end
 end, function(Key)
 	if Key.KeyCode then
 		Settings.ToggleMouseUnlock = Key
+		SaveSettings(Settings)
+	end
+end)
+P3_Section1:addKeybind("Toggle Auto Warp", Settings.ToggleAutoWarp, function()
+	if FGUI then
+		if Settings.AutoWarp == true then
+			SoundGood:Play()
+			GUI:Notify("Auto Warp","Auto Warp has been toggle OFF")
+			Settings.AutoWarp = false
+		else
+			SoundGood:Play()
+			GUI:Notify("Auto Warp","Auto Warp has been toggle ON")
+			Settings.AutoWarp = true
+		end
+	end
+end, function(Key)
+	if Key.KeyCode then
+		Settings.ToggleAutoWarp = Key
 		SaveSettings(Settings)
 	end
 end)
@@ -576,6 +605,47 @@ for i,v in pairs(WS.Features:GetDescendants()) do
 		CreateAsteroidMarker(v.Rock)
 	end
 end
+
+spawn(function()
+    while wait() and FGUI do
+        pcall(function()
+            wait(15)
+            if Settings.AutoWarp == true 
+            and PlayerGui.Overlays.Standard.System.Destination.Visible == true then
+                local warpMenu = PlayerGui.QuickWarp
+            	keypress(0x20)
+            	keyrelease(0x20)
+                if PlayerGui.Overlays.Standard.Flying.Wrapper.HUD.Indicators.Warp.Visible == false then
+                    local holdSpace = coroutine.wrap(function()
+                        while wait() 
+                        and Settings.AutoWarp == true  do
+                            keypress(0x20)
+                        end
+                    end)
+                    holdSpace()
+
+                    local moveMouse = coroutine.wrap(function()
+                        while wait() 
+                        and Settings.AutoWarp == true do
+                            mousemoverel(0,10)
+                            for k,v in pairs(warpMenu.Items:GetChildren()) do
+                                if v:IsA("Frame") 
+                                and v.Icon.Image == "rbxassetid://3885669481" 
+                                and v.Icon.ImageColor3 ~= Color3.new(1,1,1)
+                                and v.Back.BackgroundTransparency == 0 then
+                                    keyrelease(0x20)
+                                    break
+                                end
+                            end
+                        end
+                    end)
+                    moveMouse()
+                end
+            end
+        end)
+    end
+end)
+
 wait(Settings.MineralNotifWait)
 if Settings.MineralNotif == true then
 	SoundGood:Play()
