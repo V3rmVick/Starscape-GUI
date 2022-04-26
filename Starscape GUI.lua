@@ -1,6 +1,6 @@
 local Succ, Error = pcall(function()
 repeat wait() until game:IsLoaded()
-if game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name ~= "Starscape: Beta" then
+if game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name ~= "Starscape [Beta]" then
 --=============================================================
 
 -- Services
