@@ -614,7 +614,8 @@ for i,v in pairs(WS.Features:GetDescendants()) do
 end
 
 spawn(function()
-    while wait(2) and FGUI do
+    while FGUI do
+		wait(2) 
 		if Settings.AutoWarp == true and PlayerGui.Overlays.Standard.System.Destination.Visible == true then
 			local warpMenu = PlayerGui.QuickWarp
 			while wait() do
