@@ -1,6 +1,6 @@
 local Succ, Error = pcall(function()
 repeat wait() until game:IsLoaded()
-if game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name ~= "Starscape [Beta]" then
+if string.find(game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name, "Starscape:") then
 --=============================================================
 
 -- Services
@@ -36,17 +36,19 @@ local DefSettings = {
 	NPCTog = true,
 	NPCRange = 14000,
 	AsteroidTog = true,
-	MineralNotif = true,
 	AsteroidRange = 10000,
+	ContainerTog = true,
+	RemoveContainerMarker = true,
+	ContainerRange = 10000,
 	UpdaterDelay = .5,
-	MineralNotifWait = 6,
 	PlayerESPSize = 100,
 	NPCESPSize = 100,
 	AsteroidESPSize = 100,
+	ContainerESPSize = 100,
 	ToggleUIBind = Enum.KeyCode.K,
 	UIState = true,
 	ToggleMouseUnlock = Enum.KeyCode.RightAlt,
-	ToggleAutoWarp = Enum.KeyCode.L,
+	ToggleAutoWarp = Enum.KeyCode.J,
 	AutoWarp = false,
 	MouseUnlockOpenUI = true
 }
@@ -95,6 +97,9 @@ NPCFolder.Name = "NPCMarkers"
 local AsteroidFolder = Instance.new("Folder")
 AsteroidFolder.Parent = FGUI
 AsteroidFolder.Name = "AsteroidMarkers"
+local ContainerFolder = Instance.new("Folder")
+ContainerFolder.Parent = FGUI
+ContainerFolder.Name = "ContainerMarkers"
 
 -- Functions
 local function GetDistance(Pos)
@@ -134,7 +139,7 @@ local function waitUntilTimeout(event, timeout)
 end
 
 local function MarkerUpdater(MGUI)
-	while CGui:FindFirstChild(GUIName) and MGUI do
+	while FGUI and MGUI do
 		if MGUI.Adornee then
 			local CurDist = GetDistance(MGUI.Dist.Parent.Adornee.Position)
 			if MGUI.Name == "PlayerMarker" then
@@ -156,6 +161,15 @@ local function MarkerUpdater(MGUI)
 			elseif MGUI.Name == "AsteroidMarker" then
 				MGUI.Size = UDim2.new(0, Settings.AsteroidESPSize, 0, Settings.AsteroidESPSize)
 				if CurDist <= Settings.AsteroidRange and Settings.AsteroidTog == true then
+					MGUI.Enabled = true
+					MGUI.Dist.Text = CurDist
+				else
+					MGUI.Enabled = false
+				end
+			elseif MGUI.Name == "ContainerMarker" then
+				MGUI.Size = UDim2.new(0, Settings.ContainerESPSize, 0, Settings.ContainerESPSize)
+				MGUI.Marker.ImageColor3 = MGUI.Adornee.Parent.Hull.Lights.Part.Color
+				if CurDist <= Settings.ContainerRange and Settings.ContainerTog == true and not (Settings.RemoveContainerMarker == true and #MGUI.Adornee.Parent.Contents:GetChildren() == 0) then
 					MGUI.Enabled = true
 					MGUI.Dist.Text = CurDist
 				else
@@ -431,6 +445,80 @@ local function CreateAsteroidMarker(Rock)
 		MarkerUpdater(AsteroidMarker)
 	end)
 end
+local function CreateContainerMarker(Cont)
+	local ContainerMarker = Instance.new("BillboardGui")
+	local Marker = Instance.new("ImageLabel")
+	local Dist = Instance.new("TextLabel")
+	local ContentsHolder = Instance.new("Frame")
+	local UIListLayout = Instance.new("UIListLayout")
+	local ItemTemp = Instance.new("TextLabel")
+
+	ContainerMarker.Name = "ContainerMarker"
+	ContainerMarker.Parent = ContainerFolder
+	ContainerMarker.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	ContainerMarker.Active = true
+	ContainerMarker.AlwaysOnTop = true
+	ContainerMarker.LightInfluence = 1.000
+	ContainerMarker.Size = UDim2.new(0, 100, 0, 100)
+	ContainerMarker.Adornee = Cont.PrimaryPart
+
+	Marker.Name = "Marker"
+	Marker.Parent = ContainerMarker
+	Marker.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Marker.BackgroundTransparency = 1.000
+	Marker.Position = UDim2.new(0.300000012, 0, 0.300000012, 0)
+	Marker.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
+	Marker.Image = "rbxassetid://9165072179"
+	Marker.ImageColor3 = Cont.Hull.Lights.Part.Color
+
+	Dist.Name = "Dist"
+	Dist.Parent = ContainerMarker
+	Dist.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Dist.BackgroundTransparency = 1.000
+	Dist.Position = UDim2.new(-0.5, 0, 0.699999988, 0)
+	Dist.Size = UDim2.new(2, 0, 0.200000003, 0)
+	Dist.Font = Enum.Font.GothamBold
+	Dist.Text = GetDistance(Cont.PrimaryPart.Position)
+	Dist.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Dist.TextScaled = true
+	Dist.TextSize = 14.000
+	Dist.TextStrokeTransparency = 0.800
+	Dist.TextWrapped = true
+
+	ContentsHolder.Name = "ContentsHolder"
+	ContentsHolder.Parent = ContainerMarker
+	ContentsHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ContentsHolder.BackgroundTransparency = 1.000
+	ContentsHolder.Position = UDim2.new(0.800000012, 0, 0.400000006, 0)
+	ContentsHolder.Size = UDim2.new(1, 0, 2, 0)
+
+	UIListLayout.Parent = ContentsHolder
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+	ItemTemp.Name = "ItemTemp"
+	ItemTemp.Parent = ContentsHolder
+	ItemTemp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ItemTemp.BackgroundTransparency = 1.000
+	ItemTemp.Size = UDim2.new(1, 0, 0.0700000003, 0)
+	ItemTemp.Visible = false
+	ItemTemp.Font = Enum.Font.GothamBold
+	ItemTemp.Text = "Nil"
+	ItemTemp.TextColor3 = Color3.fromRGB(255, 255, 255)
+	ItemTemp.TextSize = 14.000
+	ItemTemp.TextStrokeTransparency = 0.800
+	ItemTemp.TextXAlignment = Enum.TextXAlignment.Left
+	
+	for i,v in pairs(Cont.Contents:GetChildren()) do
+		local Clone = ItemTemp:Clone()
+		Clone.Parent = ContentsHolder
+		Clone.Text = v.Name:gsub("(%l)(%u)", "%1 %2").." x"..tostring(v.Value)
+		Clone.Visible = true
+	end
+	
+	spawn(function()
+		MarkerUpdater(ContainerMarker)
+	end)
+end
 
 -- Update UI Toggle
 if Settings.UIState == false then
@@ -469,12 +557,22 @@ P1_Section3:addToggle("Toggle", Settings.AsteroidTog, function(State)
 	Settings.AsteroidTog = State
 	SaveSettings(Settings)
 end)
-P1_Section3:addToggle("Server Minerals Notification", Settings.MineralNotif, function(State)
-	Settings.MineralNotif = State
-	SaveSettings(Settings)
-end)
 P1_Section3:addSlider("Range", Settings.AsteroidRange, 0, 80000, function(Val)
 	Settings.AsteroidRange = Val
+	SaveSettings(Settings)
+end)
+
+local P1_Section4 = Page1:addSection("Containers")
+P1_Section4:addToggle("Toggle", Settings.ContainerTog, function(State)
+	Settings.ContainerTog = State
+	SaveSettings(Settings)
+end)
+P1_Section4:addToggle("Remove Marker if Empty", Settings.RemoveContainerMarker, function(State)
+	Settings.RemoveContainerMarker = State
+	SaveSettings(Settings)
+end)
+P1_Section4:addSlider("Range", Settings.ContainerRange, 0, 80000, function(Val)
+	Settings.ContainerRange = Val
 	SaveSettings(Settings)
 end)
 
@@ -483,10 +581,6 @@ local Page2 = GUI:addPage("Settings")
 local P2_Section1 = Page2:addSection("Delays")
 P2_Section1:addSlider("Updater Delay", Settings.UpdaterDelay, 0.03, 10, function(Val)
 	Settings.UpdaterDelay = Val
-	SaveSettings(Settings)
-end)
-P2_Section1:addSlider("Initial Mineral Notification Delay", Settings.MineralNotifWait, 2, 15, function(Val)
-	Settings.MineralNotifWait = Val
 	SaveSettings(Settings)
 end)
 
@@ -501,6 +595,10 @@ P2_Section2:addSlider("NPC ESP UI Size", Settings.NPCESPSize, 10, 1000, function
 end)
 P2_Section2:addSlider("Asteroid ESP UI Size", Settings.AsteroidESPSize, 10, 1000, function(Val)
 	Settings.AsteroidESPSize = Val
+	SaveSettings(Settings)
+end)
+P2_Section2:addSlider("Container ESP UI Size", Settings.ContainerESPSize, 10, 1000, function(Val)
+	Settings.ContainerESPSize = Val
 	SaveSettings(Settings)
 end)
 
@@ -549,8 +647,10 @@ end, function(Key)
 		SaveSettings(Settings)
 	end
 end)
+local Deb = false
 P3_Section1:addKeybind("Toggle Auto Warp", Settings.ToggleAutoWarp, function()
-	if FGUI then
+	if FGUI and Deb == false then
+		Deb = true
 		if Settings.AutoWarp == true then
 			Notif("Auto Warp","Auto Warp has been toggle OFF")
 			Settings.AutoWarp = false
@@ -559,6 +659,8 @@ P3_Section1:addKeybind("Toggle Auto Warp", Settings.ToggleAutoWarp, function()
 			Settings.AutoWarp = true
 		end
 		SaveSettings(Settings)
+		wait(1)
+		Deb = false
 	end
 end, function(Key)
 	if Key.KeyCode then
@@ -592,9 +694,16 @@ WS.NPCs.Ships.ChildAdded:Connect(function(Child)
 		CreateNPCMarker(Child)
 	end
 end)
-WS.Features.DescendantAdded:Connect(function(Desc)
-	if FGUI and Desc.Name == "Asteroid" then
-		CreateAsteroidMarker(Desc.Rock)
+WS.Features.ChildAdded:Connect(function(Child)
+	for i,v in pairs(Child:GetChildren()) do
+		if FGUI and Child.Name == "Asteroid" then
+			CreateAsteroidMarker(Child.Rock)
+		end
+	end
+end)
+WS.Containers.ChildAdded:Connect(function(Child)
+	if FGUI then
+		CreateContainerMarker(Child)
 	end
 end)
 
@@ -616,6 +725,9 @@ for i,v in pairs(WS.Features:GetDescendants()) do
 	if v.Name == "Asteroid" then
 		CreateAsteroidMarker(v.Rock)
 	end
+end
+for i,v in pairs(WS.Containers:GetChildren()) do
+	CreateContainerMarker(v)
 end
 
 spawn(function()
@@ -640,31 +752,6 @@ spawn(function()
 			end
 		end
     end
-end)
-
-spawn(function()
-	wait(Settings.MineralNotifWait)
-	if Settings.MineralNotif == true then
-		local Found = {}
-		for i,v in pairs(Minerals) do
-			if GetMineralNum(v) > 0 then
-				Found[v] = GetMineralNum(v)
-			end
-		end
-		local TableLen = 0
-		for i,v in pairs(Found) do
-			TableLen = TableLen + 1
-		end
-		if TableLen == 0 then
-			Lib:Notification("Detected Minerals","There are no minerals in this server")
-		else
-			local NewStr = ""
-			for i,v in pairs(Found) do
-				NewStr = NewStr..i.." x"..tostring(v).." | "
-			end
-			Notif("Minerals",NewStr)
-		end
-	end
 end)
 
 --=============================================================
