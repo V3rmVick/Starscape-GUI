@@ -703,7 +703,15 @@ WS.Features.ChildAdded:Connect(function(Child)
 end)
 WS.Containers.ChildAdded:Connect(function(Child)
 	if FGUI then
-		CreateContainerMarker(Child)
+		if Child.Name == "SecuredContainer" then
+			CreateContainerMarker(v)
+		elseif Child.Name == "Wreck" then
+			for i2,v2 in pairs(Child:WaitForChild("Contents"):GetChildren()) do
+				if v2.Name == "SecuredContainer" then
+					CreateContainerMarker(v2)
+				end
+			end
+		end
 	end
 end)
 
@@ -727,7 +735,15 @@ for i,v in pairs(WS.Features:GetDescendants()) do
 	end
 end
 for i,v in pairs(WS.Containers:GetChildren()) do
-	CreateContainerMarker(v)
+	if v.Name == "SecuredContainer" then
+		CreateContainerMarker(v)
+	elseif v.Name == "Wreck" then
+		for i2,v2 in pairs(v.Contents:GetChildren()) do
+			if v2.Name == "SecuredContainer" then
+				CreateContainerMarker(v2)
+			end
+		end
+	end
 end
 
 spawn(function()
