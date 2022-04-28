@@ -460,7 +460,7 @@ local function CreateContainerMarker(Cont)
 	ContainerMarker.AlwaysOnTop = true
 	ContainerMarker.LightInfluence = 1.000
 	ContainerMarker.Size = UDim2.new(0, 100, 0, 100)
-	ContainerMarker.Adornee = Cont.PrimaryPart
+	ContainerMarker.Adornee = Cont:WaitForChild("Base")
 
 	Marker.Name = "Marker"
 	Marker.Parent = ContainerMarker
@@ -696,8 +696,8 @@ WS.NPCs.Ships.ChildAdded:Connect(function(Child)
 end)
 WS.Features.ChildAdded:Connect(function(Child)
 	for i,v in pairs(Child:GetChildren()) do
-		if FGUI and Child.Name == "Asteroid" then
-			CreateAsteroidMarker(Child.Rock)
+		if FGUI and v.Name == "Asteroid" then
+			CreateAsteroidMarker(v:WaitForChild("Rock"))
 		end
 	end
 end)
@@ -723,7 +723,7 @@ for i,v in pairs(WS.NPCs.Ships:GetChildren()) do
 end
 for i,v in pairs(WS.Features:GetDescendants()) do
 	if v.Name == "Asteroid" then
-		CreateAsteroidMarker(v.Rock)
+		CreateAsteroidMarker(v:WaitForChild("Rock"))
 	end
 end
 for i,v in pairs(WS.Containers:GetChildren()) do
