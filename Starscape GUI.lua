@@ -522,7 +522,7 @@ end
 
 local function CheckForNewMarkers()
 	for i,v in pairs(Players:GetChildren()) do
-		if v ~= LocalPlayer then
+		if v ~= Player then
 			local Found = false
 			for i2,v2 in pairs(PlayerFolder:GetChildren()) do
 				if v2.Adornee.Parent.Name == v.Name then
@@ -818,8 +818,8 @@ spawn(function()
 end)
 
 local Warp = PlayerGui.Overlays.Standard.Flying.Wrapper.HUD.Indicators.Warp
-Warp.Changed:Connect(function()
-	if FGUI and Warp.Visible == false then
+Warp.Changed:Connect(function(Change)
+	if FGUI and Change == "Visible" and Warp.Visible == false then
 		CheckForNewMarkers()
 	end
 end)
