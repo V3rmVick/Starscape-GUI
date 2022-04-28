@@ -520,71 +520,41 @@ local function CreateContainerMarker(Cont)
 	end)
 end
 
-local function CheckForNewMarkers()
+local function RefreshAllMarkers()
+	for i,v in pairs(PlayerFolder:GetChildren()) do
+		v:Destroy()
+	end
+	for i,v in pairs(NPCFolder:GetChildren()) do
+		v:Destroy()
+	end
+	for i,v in pairs(AsteroidFolder:GetChildren()) do
+		v:Destroy()
+	end
+	for i,v in pairs(ContainerFolder:GetChildren()) do
+		v:Destroy()
+	end
+
 	for i,v in pairs(Players:GetChildren()) do
 		if v ~= Player then
-			local Found = false
-			for i2,v2 in pairs(PlayerFolder:GetChildren()) do
-				if v2.Adornee.Parent.Name == v.Name then
-					Found = true
-					break
-				end
-			end
-			if Found == false then
-				CreatePlayerMarker(v)
-			end
+			CreatePlayerMarker(v)
 		end
 	end
 	for i,v in pairs(WS.NPCs.Ships:GetChildren()) do
-		if not string.find(Child.Name, "Turret") then
-			local Found = false
-			for i2,v2 in pairs(NPCFolder:GetChildren()) do
-				if v.PrimaryPart == v2.Adornee then
-					Found = true
-					break
-				end
-			end
-			if Found == false then
-				CreateNPCMarker(Child)
-			end
+		if not string.find(v.Name, "Turret") then
+			CreateNPCMarker(v)
 		end
 	end
 	for i,v in pairs(WS.Features:GetDescendants()) do
 		if v.Name == "Asteroid" then
-			local Found = false
-			for i2,v2 in pairs(AsteroidFolder:GetChildren()) do
-				if v.Rock == v2.Adornee then
-					Found = true
-					break
-				end
-			end
-			if Found == false then
-				CreateAsteroidMarker(v.Rock)
-			end
+			CreateAsteroidMarker(v:WaitForChild("Rock"))
 		end
 	end
 	for i,v in pairs(WS.Containers:GetChildren()) do
 		if v.Name == "SecureContainer" then
-			local Found = false
-			for i2,v2 in pairs(ContainerFolder:GetChildren()) do
-				if v.PrimaryPart == v2.Adornee then
-					Found = true
-					break
-				end
-			end
-			if Found == false then
-				CreateContainerMarker(v)
-			end
+			CreateContainerMarker(v)
 		elseif v.Name == "Wreck" then
 			for i2,v2 in pairs(v.Contents:GetChildren()) do
-				local Found = false
-				for i3,v3 in pairs(ContainerFolder:GetChildren()) do
-					if v2.PrimaryPart == v3.Adornee then
-						Found = true
-						break
-					end
-				end
-				if Found == false then
+				if v2.Name == "SecureContainer" then
 					CreateContainerMarker(v2)
 				end
 			end
@@ -820,7 +790,7 @@ end)
 local Warp = PlayerGui.Overlays.Standard.Flying.Wrapper.HUD.Indicators.Warp
 Warp.Changed:Connect(function(Change)
 	if FGUI and Change == "Visible" and Warp.Visible == false then
-		CheckForNewMarkers()
+		RefreshAllMarkers()
 	end
 end)
 
