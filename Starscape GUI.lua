@@ -522,15 +522,17 @@ end
 
 local function CheckForNewMarkers()
 	for i,v in pairs(Players:GetChildren()) do
-		local Found = false
-		for i2,v2 in pairs(PlayerFolder:GetChildren()) do
-			if v2.Adornee.Parent.Name == v.Name then
-				Found = true
-				break
+		if v ~= LocalPlayer then
+			local Found = false
+			for i2,v2 in pairs(PlayerFolder:GetChildren()) do
+				if v2.Adornee.Parent.Name == v.Name then
+					Found = true
+					break
+				end
 			end
-		end
-		if Found == false then
-			CreatePlayerMarker(v)
+			if Found == false then
+				CreatePlayerMarker(v)
+			end
 		end
 	end
 	for i,v in pairs(WS.NPCs.Ships:GetChildren()) do
