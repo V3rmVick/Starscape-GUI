@@ -30,40 +30,40 @@ local Minerals = {
 	["Pearl"] = {
 		MinName = "Korrelite",
 		MinMaterials = {
-			Enum.Material.Granite = "Normal",
-			Enum.Material.Marble = "Superior",
-			Enum.Material.Ice = "Pristine"
+			[Enum.Material.Granite] = "Normal",
+			[Enum.Material.Marble] = "Superior",
+			[Enum.Material.Ice] = "Pristine"
 		}
 	},
 	["Neon orange"] = {
 		MinName = "Reknite",
 		MinMaterials = {
-			Enum.Material.Granite = "Normal",
-			Enum.Material.Marble = "Superior",
-			Enum.Material.Ice = "Pristine"
+			[Enum.Material.Granite] = "Normal",
+			[Enum.Material.Marble] = "Superior",
+			[Enum.Material.Ice] = "Pristine"
 		}
 	},
 	["Sea green"] = {
 		MinName = "Gellium",
 		MinMaterials = {
-			Enum.Material.Granite = "Normal",
-			Enum.Material.Marble = "Superior",
-			Enum.Material.Ice = "Pristine"
+			[Enum.Material.Granite] = "Normal",
+			[Enum.Material.Marble] = "Superior",
+			[Enum.Material.Ice] = "Pristine"
 		}
 	},
 	["Crimson"] = {
 		MinName = "Axnit",
 		MinMaterials = {
-			Enum.Material.Ice = "Normal",
-			Enum.Material.Slate = "Pristine"
+			[Enum.Material.Ice] = "Normal",
+			[Enum.Material.Slate] = "Pristine"
 		}
 	},
 	["Tr. Blue"] = {
 		MinName = "Narcor",
 		MinMaterials = {
-			Enum.Material.Granite = "Normal"
+			[Enum.Material.Granite] = "Normal"
 		}
-	}
+	},
 }
 
 -- Settings
@@ -115,7 +115,7 @@ function TableToString(tbl)
     end
     return result.."}"
 end
-local FileName = "VickStarscapeGUISettings.txt"
+local FileName = "Vick_StarscapeSettings.txt"
 local function SaveSettings(Sett)
 	local Str = TableToString(Sett)
 	writefile(FileName,Str)
@@ -462,7 +462,8 @@ local function CreateAsteroidMarker(Rock)
 	Type.Size = UDim2.new(0.25, 0, 0.25, 0)
 	Type.Font = Enum.Font.GothamBold
 	Type.Text = ""
-	local MinData = Minerals[Rock.parent.Mineral.BrickColor]
+	Type.TextColor3 = Color3.fromRGB(255, 255, 255)
+	local MinData = Minerals[Rock.Parent.Mineral.BrickColor.Name]
 	if MinData then
 		Material = MinData.MinMaterials[Rock.Parent.Mineral.Material]
 		if Material == "Inferior" then
@@ -476,7 +477,6 @@ local function CreateAsteroidMarker(Rock)
 			Type.TextColor3 = Color3.fromRGB(255,0,160)
 		end
 	end
-	Type.TextColor3 = Color3.fromRGB(255, 255, 255)
 	Type.TextScaled = true
 	Type.TextSize = 14.000
 	Type.TextWrapped = true
