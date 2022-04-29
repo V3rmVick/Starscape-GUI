@@ -55,7 +55,7 @@ local Minerals = {
 		MinName = "Axnit",
 		MinMaterials = {
 			[Enum.Material.Ice] = "Normal",
-			[Enum.Material.Slate] = "Pristine"
+			[Enum.Material.Glass] = "Pristine"
 		}
 	},
 	["Tr. Blue"] = {
