@@ -24,8 +24,47 @@ local PlayerGui = Player.PlayerGui
 local Sounds = RS.Sounds
 local SoundGood = Sounds.Raid.Update
 local SoundBad = Sounds.Raid.Stage
-local Minerals = {"Korrelite (inferior)","Korrelite","Korrelite (superior)","Korrelite (pristine)","Reknite (inferior)","Reknite","Reknite (superior)","Reknite (pristine)","Gellium","Gellium (superior)","Gellium (pristine)","Axnit","Axnit (pristine)","Narcor","Red Narcor","Vexnium"}
 local MouseUnlock = false
+
+local Minerals = {
+	BrickColor.new("Pearl") = {
+		MinName = "Korrelite"
+		MinMaterials = {
+			Enum.Material.Granite = "Normal",
+			Enum.Material.Marble = "Superior",
+			Enum.Material.Ice = "Pristine"
+		}
+	}
+	BrickColor.new("Neon orange") = {
+		MinName = "Reknite"
+		MinMaterials = {
+			Enum.Material.Granite = "Normal",
+			Enum.Material.Marble = "Superior",
+			Enum.Material.Ice = "Pristine"
+		}
+	}
+	BrickColor.new("Sea green") = {
+		MinName = "Gellium"
+		MinMaterials = {
+			Enum.Material.Granite = "Normal",
+			Enum.Material.Marble = "Superior",
+			Enum.Material.Ice = "Pristine"
+		}
+	}
+	BrickColor.new("Crimson") = {
+		MinName = "Axnit"
+		MinMaterials = {
+			Enum.Material.Ice = "Normal",
+			Enum.Material.Slate = "Pristine"
+		}
+	}
+	BrickColor.new("Tr. Blue") = {
+		MinName = "Narcor"
+		MinMaterials = {
+			Enum.Material.Granite = "Normal"
+		}
+	}
+}
 
 -- Settings
 local DefSettings = {
@@ -378,8 +417,7 @@ local function CreateAsteroidMarker(Rock)
 	local AsteroidMarker = Instance.new("BillboardGui")
 	local Marker = Instance.new("ImageLabel")
 	local Dist = Instance.new("TextLabel")
-	local Superior = Instance.new("ImageLabel")
-	local Pristine = Instance.new("ImageLabel")
+	local Type = Instance.new("TextLabel")
 
 	AsteroidMarker.Name = "AsteroidMarker"
 	AsteroidMarker.Parent = AsteroidFolder
@@ -387,7 +425,7 @@ local function CreateAsteroidMarker(Rock)
 	AsteroidMarker.Active = true
 	AsteroidMarker.AlwaysOnTop = true
 	AsteroidMarker.LightInfluence = 1.000
-	AsteroidMarker.Size = UDim2.new(0, Settings.AsteroidESPSize, 0, Settings.AsteroidESPSize)
+	AsteroidMarker.Size = UDim2.new(0, 100, 0, 100)
 	AsteroidMarker.Adornee = Rock
 	if Settings.AsteroidTog == false then
 		AsteroidMarker.Enabled = false
@@ -416,30 +454,32 @@ local function CreateAsteroidMarker(Rock)
 	Dist.TextStrokeTransparency = 0.800
 	Dist.TextWrapped = true
 
-	Superior.Name = "Superior"
-	Superior.Parent = AsteroidMarker
-	Superior.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Superior.BackgroundTransparency = 1.000
-	Superior.Position = UDim2.new(0.75, 0, 0.375, 0)
-	Superior.Size = UDim2.new(0.25, 0, 0.25, 0)
-	Superior.Visible = false
-	if Rock.Parent.Mineral.Material == Enum.Material.Marble then
-		Superior.Visible = true
+	Type.Name = "Type"
+	Type.Parent = AsteroidMarker
+	Type.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Type.BackgroundTransparency = 1.000
+	Type.Position = UDim2.new(0.699999988, 0, 0.379999995, 0)
+	Type.Size = UDim2.new(0.25, 0, 0.25, 0)
+	Type.Font = Enum.Font.GothamBold
+	Type.Text = ""
+	local MinData = Minerals[Rock.parent.Mineral.BrickColor]
+	if MinData then
+		Material = MinData.MinMaterials[Rock.Parent.Mineral.Material]
+		if Material == "Inferior" then
+			Type.Text = "I"
+			Type.TextColor3 = Color3.fromRGB(255,0,0)
+		elseif Material == "Superior" then
+			Type.Text = "S"
+			Type.TextColor3 = Color3.fromRGB(255,200,0)
+		elseif Material == "Pristine" then
+			Type.Text = "P"
+			Type.TextColor3 = Color3.fromRGB(255,0,160)
+		end
 	end
-	Superior.Image = "rbxassetid://5710750120"
-
-	Pristine.Name = "Pristine"
-	Pristine.Parent = AsteroidMarker
-	Pristine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	Pristine.BackgroundTransparency = 1.000
-	Pristine.Position = UDim2.new(1, 0, 0.375, 0)
-	Pristine.Size = UDim2.new(0.25, 0, 0.25, 0)
-	Pristine.Visible = false
-	if Rock.Parent.Mineral.Material == Enum.Material.Ice then
-		Superior.Visible = true
-		Pristine.Visible = true
-	end
-	Pristine.Image = "rbxassetid://5710750120"
+	Type.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Type.TextScaled = true
+	Type.TextSize = 14.000
+	Type.TextWrapped = true
 	
 	spawn(function()
 		MarkerUpdater(AsteroidMarker)
