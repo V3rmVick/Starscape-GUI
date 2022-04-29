@@ -27,39 +27,39 @@ local SoundBad = Sounds.Raid.Stage
 local MouseUnlock = false
 
 local Minerals = {
-	BrickColor.new("Pearl") = {
-		MinName = "Korrelite"
+	["Pearl"] = {
+		MinName = "Korrelite",
 		MinMaterials = {
 			Enum.Material.Granite = "Normal",
 			Enum.Material.Marble = "Superior",
 			Enum.Material.Ice = "Pristine"
 		}
-	}
-	BrickColor.new("Neon orange") = {
-		MinName = "Reknite"
+	},
+	["Neon orange"] = {
+		MinName = "Reknite",
 		MinMaterials = {
 			Enum.Material.Granite = "Normal",
 			Enum.Material.Marble = "Superior",
 			Enum.Material.Ice = "Pristine"
 		}
-	}
-	BrickColor.new("Sea green") = {
-		MinName = "Gellium"
+	},
+	["Sea green"] = {
+		MinName = "Gellium",
 		MinMaterials = {
 			Enum.Material.Granite = "Normal",
 			Enum.Material.Marble = "Superior",
 			Enum.Material.Ice = "Pristine"
 		}
-	}
-	BrickColor.new("Crimson") = {
-		MinName = "Axnit"
+	},
+	["Crimson"] = {
+		MinName = "Axnit",
 		MinMaterials = {
 			Enum.Material.Ice = "Normal",
 			Enum.Material.Slate = "Pristine"
 		}
-	}
-	BrickColor.new("Tr. Blue") = {
-		MinName = "Narcor"
+	},
+	["Tr. Blue"] = {
+		MinName = "Narcor",
 		MinMaterials = {
 			Enum.Material.Granite = "Normal"
 		}
