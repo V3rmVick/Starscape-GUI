@@ -745,10 +745,10 @@ P3_Section1:addKeybind("Toggle Auto Warp", Settings.ToggleAutoWarp, function()
 	if FGUI and Deb == false then
 		Deb = true
 		if Settings.AutoWarp == true then
-			Notif("Auto Warp","Auto Warp has been toggle OFF")
+			Notif("Auto Warp","Auto Warp has been toggled OFF")
 			Settings.AutoWarp = false
 		else
-			Notif("Auto Warp","Auto Warp has been toggle ON")
+			Notif("Auto Warp","Auto Warp has been toggled ON")
 			Settings.AutoWarp = true
 		end
 		SaveSettings(Settings)
