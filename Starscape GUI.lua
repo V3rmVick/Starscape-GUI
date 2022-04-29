@@ -35,6 +35,14 @@ local Minerals = {
 			[Enum.Material.Ice] = "Pristine"
 		}
 	},
+	["Institutional white"] = {
+		MinName = "Korrelite",
+		MinMaterials = {
+			[Enum.Material.Granite] = "Normal",
+			[Enum.Material.Marble] = "Superior",
+			[Enum.Material.Ice] = "Pristine"
+		}
+	},
 	["Neon orange"] = {
 		MinName = "Reknite",
 		MinMaterials = {
@@ -277,7 +285,7 @@ local function CreatePlayerMarker(TargPlayer)
 	if Char then
 		PlayerMarker.Adornee = Char.HumanoidRootPart
 	end
-	if Settings.PlayerTog == false then
+	if Settings.PlayerTog == false or GetDistance(Char.HumanoidRootPart.Position) > Settings.PlayerRange then
 		PlayerMarker.Enabled = false
 	end
 
@@ -369,7 +377,7 @@ local function CreateNPCMarker(Ship)
 	elseif Afil.Value == "Drones" or Afil.Value == "Pirates" then
 		Marker.ImageColor3 = Color3.fromRGB(255,0,0)
 	end
-	if Settings.NPCTog == false then
+	if Settings.NPCTog == false or GetDistance(Ship.PrimaryPart.Position) > Settings.NPCRange then
 		NPCMarker.Enabled = false
 	end
 
@@ -427,7 +435,7 @@ local function CreateAsteroidMarker(Rock)
 	AsteroidMarker.LightInfluence = 1.000
 	AsteroidMarker.Size = UDim2.new(0, 100, 0, 100)
 	AsteroidMarker.Adornee = Rock
-	if Settings.AsteroidTog == false then
+	if Settings.AsteroidTog == false or GetDistance(Rock.Position) > Settings.AsteroidRange then
 		AsteroidMarker.Enabled = false
 	end
 
@@ -501,6 +509,9 @@ local function CreateContainerMarker(Cont)
 	ContainerMarker.LightInfluence = 1.000
 	ContainerMarker.Size = UDim2.new(0, 100, 0, 100)
 	ContainerMarker.Adornee = Cont:WaitForChild("Base")
+	if Settings.ContainerTog == false or GetDistance(Cont.PrimaryPart.Position) > Settings.ContainerRange then
+		ContainerMarker.Enabled = false
+	end
 
 	Marker.Name = "Marker"
 	Marker.Parent = ContainerMarker
