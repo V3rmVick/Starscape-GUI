@@ -125,8 +125,13 @@ function TableToString(tbl)
 end
 local FileName = "Vick_StarscapeSettings.txt"
 local function SaveSettings(Sett)
-	local Str = TableToString(Sett)
-	writefile(FileName,Str)
+	local Suc, Fail = pcall(function()
+		local Str = TableToString(Sett)
+		writefile(FileName,Str)
+	end)
+	if Fail then
+		warn(Fail)
+	end
 end
 if not isfile(FileName) then
 	SaveSettings(DefSettings)
@@ -605,7 +610,7 @@ local function RefreshAllMarkers()
 			CreateContainerMarker(v)
 		elseif v.Name == "Wreck" then
 			for i2,v2 in pairs(v.Contents:GetChildren()) do
-				if v2.Name == "SecureContainer" then
+				if v2.Name == "CargoContainer" then
 					CreateContainerMarker(v2)
 				end
 			end
@@ -620,7 +625,6 @@ end
 
 -- PAGE 1
 local Page1 = GUI:addPage("ESP")
-
 local P1_Section1 = Page1:addSection("Players")
 P1_Section1:addToggle("Toggle", Settings.PlayerTog, function(State)
 	Settings.PlayerTog = State
@@ -644,7 +648,6 @@ P1_Section2:addSlider("Range", Settings.NPCRange, 0, 80000, function(Val)
 	Settings.NPCRange = Val
 	SaveSettings(Settings)
 end)
-
 local P1_Section3 = Page1:addSection("Asteroids")
 P1_Section3:addToggle("Toggle", Settings.AsteroidTog, function(State)
 	Settings.AsteroidTog = State
@@ -783,36 +786,18 @@ Players.PlayerRemoving:Connect(function(Plr)
 	end
 end)
 
+local Warp = PlayerGui.Overlays.Standard.Flying.Wrapper.HUD.Indicators.Warp
+Warp.Changed:Connect(function(Change)
+	if FGUI and Change == "Visible" and Warp.Visible == false then
+		RefreshAllMarkers()
+	end
+end)
+
 -- Load
 GUI:SelectPage(GUI.pages[1], true)
 
 -- Init
-for i,v in pairs(Players:GetChildren()) do
-	if v ~= Player then
-		CreatePlayerMarker(v)
-	end
-end
-for i,v in pairs(WS.NPCs.Ships:GetChildren()) do
-	if not string.find(v.Name, "Turret") then
-		CreateNPCMarker(v)
-	end
-end
-for i,v in pairs(WS.Features:GetDescendants()) do
-	if v.Name == "Asteroid" then
-		CreateAsteroidMarker(v:WaitForChild("Rock"))
-	end
-end
-for i,v in pairs(WS.Containers:GetChildren()) do
-	if v.Name == "SecureContainer" then
-		CreateContainerMarker(v)
-	elseif v.Name == "Wreck" then
-		for i2,v2 in pairs(v.Contents:GetChildren()) do
-			if v2.Name == "SecureContainer" then
-				CreateContainerMarker(v2)
-			end
-		end
-	end
-end
+RefreshAllMarkers()
 
 spawn(function()
     while FGUI do
@@ -828,7 +813,7 @@ spawn(function()
 							break
 						end
 					end
-					mousemoverel(0,20)
+					mousemoverel(0,30)
 				else
 					keyrelease(0x20)
 					break
@@ -838,11 +823,11 @@ spawn(function()
     end
 end)
 
-local Warp = PlayerGui.Overlays.Standard.Flying.Wrapper.HUD.Indicators.Warp
-Warp.Changed:Connect(function(Change)
-	if FGUI and Change == "Visible" and Warp.Visible == false then
-		RefreshAllMarkers()
-	end
+-- Anti-AFK
+local VirtualUser=game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+VirtualUser:CaptureController()
+VirtualUser:ClickButton2(Vector2.new())
 end)
 
 --=============================================================
