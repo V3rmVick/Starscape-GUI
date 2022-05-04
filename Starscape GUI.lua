@@ -272,7 +272,7 @@ local function SetModal(State)
 end
 
 local function CreatePlayerMarker(TargPlayer)
-	local PData = TargPlayer.PublicData
+	local PData = TargPlayer:WaitForChild("PublicData")
 	local PlayerMarker = Instance.new("BillboardGui")
 	local Marker = Instance.new("ImageLabel")
 	local PlrName = Instance.new("TextLabel")
@@ -525,7 +525,9 @@ local function CreateContainerMarker(Cont)
 	Marker.Position = UDim2.new(0.300000012, 0, 0.300000012, 0)
 	Marker.Size = UDim2.new(0.400000006, 0, 0.400000006, 0)
 	Marker.Image = "rbxassetid://9165072179"
-	Marker.ImageColor3 = Cont.Hull.Lights.Part.Color
+	if Cont:FindFirstChild("Hull") then
+		Marker.ImageColor3 = Cont.Hull.Lights.Part.Color
+	end
 
 	Dist.Name = "Dist"
 	Dist.Parent = ContainerMarker
@@ -609,11 +611,12 @@ local function RefreshAllMarkers()
 		if v.Name == "SecureContainer" then
 			CreateContainerMarker(v)
 		elseif v.Name == "Wreck" then
-			for i2,v2 in pairs(v.Contents:GetChildren()) do
-				if v2.Name == "CargoContainer" then
-					CreateContainerMarker(v2)
-				end
-			end
+			CreateContainerMarker(v)
+		end
+	end
+	for i,v in pairs(WS.Features:GetDescendants()) do
+		if v.Name == "CargoContainer" then
+			CreateContainerMarker(v)
 		end
 	end
 end
@@ -824,8 +827,8 @@ spawn(function()
 end)
 
 -- Anti-AFK
-local VirtualUser=game:service'VirtualUser'
-game:service'Players'.LocalPlayer.Idled:connect(function()
+local VirtualUser=game:GetService('VirtualUser')
+Player.Idled:connect(function()
 VirtualUser:CaptureController()
 VirtualUser:ClickButton2(Vector2.new())
 end)
